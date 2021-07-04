@@ -1,7 +1,10 @@
 package com.webflux.webflux;
 
+import lombok.Getter;
+
 import java.beans.ConstructorProperties;
 
+@Getter
 public class Dish {
     private String name;
     private boolean isDelivered;
@@ -13,7 +16,8 @@ public class Dish {
     }
 
     public static Dish deliver(Dish dish) {
-        dish.isDelivered = true;
+        Dish deliveredDish = new Dish(dish.name);
+        deliveredDish.isDelivered = true;
         return dish;
     }
 }
