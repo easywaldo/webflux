@@ -1,0 +1,13 @@
+package com.webflux.webflux.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import reactor.core.publisher.Mono;
+
+@Controller
+public class HomeController {
+    @GetMapping(value = "/home")
+    Mono<String> home() {
+        return Mono.just("home");
+    }
+}
