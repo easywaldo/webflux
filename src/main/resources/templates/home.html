@@ -7,5 +7,29 @@
         Welcome Spring boot.
         This is served reactively.
     </p>
+    <table>
+        <thead>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Price</th>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.id}"></td>
+                <td th:text="${item.itemName}"></td>
+                <td th:text="${item.itemPrice}"></td>
+                <td>
+                    <form method="post" th:action="@{'/add/' + ${item.id}">
+                        <input type="submit" value="Add to Cart" />
+                    </form>
+                </td>
+                <td>
+                    <form th:method="delete" th:action="@{'/delete/' + ${item.id}}">
+                        <input type="submit" value="Delete" />
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>
