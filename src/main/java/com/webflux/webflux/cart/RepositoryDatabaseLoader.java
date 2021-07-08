@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RepositoryDatabaseLoader {
-    @Bean
-    CommandLineRunner initialze(BlockingItemRepository repository) {
+    @Bean(value = "repository_loader")
+    public CommandLineRunner initialize(BlockingItemRepository repository) {
         return args ->{
             repository.save(new Item("green tea", 4800));
             repository.save(new Item("orange juice", 10000));

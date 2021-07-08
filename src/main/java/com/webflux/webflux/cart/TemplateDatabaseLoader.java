@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TemplateDatabaseLoader {
-    @Bean
-    CommandLineRunner initialize(MongoOperations mongo) {
+    @Bean(value = "template_loader")
+    public CommandLineRunner initialize(MongoOperations mongo) {
         return args -> {
             mongo.save(new Item("watermelon", 23000));
             mongo.save(new Item("ice maker", 70000));
