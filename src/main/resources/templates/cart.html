@@ -19,15 +19,22 @@
                 <td th:text="${item.itemName}"></td>
                 <td th:text="${item.itemPrice}"></td>
                 <td>
-                    <form method="post" th:action="@{'/add/' + ${item.id}">
+                    <form method="post" th:action="@{'/cart/add/' + ${item.id}}">
                         <input type="submit" value="Add to Cart" />
                     </form>
                 </td>
                 <td>
-                    <form th:method="delete" th:action="@{'/delete/' + ${item.id}}">
+                    <form th:method="delete" th:action="@{'/cart/delete/' + ${item.id}}">
                         <input type="submit" value="Delete" />
                     </form>
                 </td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr th:each="cartItem : ${cart.cartItems}">
+                <td th:text="${cartItem.item.id}"></td>
+                <td th:text="${cartItem.item.itemName}"></td>
+                <td th:text="${cartItem.quantity}"></td>
             </tr>
         </tbody>
     </table>

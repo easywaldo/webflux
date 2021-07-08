@@ -2,7 +2,6 @@ package com.webflux.webflux.service;
 
 import com.webflux.webflux.cart.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.result.view.Rendering;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -26,8 +25,8 @@ public class CartService {
     }
 
     public Mono<Cart> addToCart(String cartId, String id) {
-        return this.cartRepository.findById("My Cart")
-            .defaultIfEmpty(new Cart("My cart"))
+        return this.cartRepository.findById(cartId)
+            .defaultIfEmpty(new Cart("My Cart"))
             .flatMap(cart -> cart.getCartItems().stream()
                 .filter(cartItem -> cartItem.getItem().getId().equals(id))
                 .findAny()
@@ -35,14 +34,33 @@ public class CartService {
                     cartItem.increment();
                     return Mono.just(cart);
                 })
-                .orElseGet(() -> {
-                    return this.itemRepository.findById(id)
-                        .map(item -> new CartItem(item))
-                        .map(cartItem -> {
-                            cart.getCartItems().add(cartItem);
-                            return cart;
-                        });
-                }))
-            .flatMap(cart -> this.cartRepository.save(cart));
+                .orElseGet(() ->
+                    this.itemRepository.findById(id)
+                        .map(CartItem::new)
+                        .doOnNext(cartItem ->
+                            cart.getCartItems().add(cartItem))
+                        .map(cartItem -> cart)))
+            .flatMap(this.cartRepository::save);
+    }
+
+    public Mono<Object> deleteToCart(String cartId, String itemId) {
+        return this.cartRepository.findById(cartId)
+            .defaultIfEmpty(new Cart("My Cart"))
+            .flatMap(cart -> cart.getCartItems().stream()
+                .filter(cartItem -> cartItem.getItem().getId().equals(itemId))
+                .findFirst()
+                .map(cartItem -> {
+                    if (cartItem.getQuantity() == 0) {
+                        cart.getCartItems().remove(cartItem);
+                    }
+                    else {
+                        cartItem.decrement();
+                    }
+                    return Mono.just(cart);
+                })
+                .orElseGet(() ->
+                    this.cartRepository.findById(cartId)
+                ))
+            .flatMap(this.cartRepository::save);
     }
 }
