@@ -1,6 +1,9 @@
 package com.webflux.webflux.service;
 
 import com.webflux.webflux.cart.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -10,8 +13,9 @@ public class CartService {
     private final ItemRepository itemRepository;
     private final CartRepository cartRepository;
 
+    @Autowired
     public CartService(ItemRepository itemRepository,
-                       CartRepository cartRepository) {
+                       CartRepository cartRepository){
         this.itemRepository = itemRepository;
         this.cartRepository = cartRepository;
     }
@@ -62,5 +66,17 @@ public class CartService {
                     this.cartRepository.findById(cartId)
                 ))
             .flatMap(this.cartRepository::save);
+    }
+
+    public Flux<Item> searchItems(String name, double itemPrice, boolean useAnd) {
+        Item item = new Item(name, itemPrice);
+        ExampleMatcher matcher = useAnd ?
+            ExampleMatcher.matchingAll()
+            : ExampleMatcher.matchingAny()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+                .withIgnoreCase()
+                .withIgnorePaths("price");
+        Example<Item> probe = Example.of(item, matcher);
+        return itemRepository.findAll(probe);
     }
 }

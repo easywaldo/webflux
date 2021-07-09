@@ -4,7 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-@Component
+/*@Component
 public class RepositoryDatabaseLoader {
     @Bean(value = "repository_loader")
     public CommandLineRunner initialize(BlockingItemRepository repository) {
@@ -13,4 +13,4 @@ public class RepositoryDatabaseLoader {
             repository.save(new Item("orange juice", 10000));
         };
     }
-}
+}*/

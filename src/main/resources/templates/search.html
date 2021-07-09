@@ -1,0 +1,23 @@
+<html lang="en">
+<head>
+    <title>Hacking with Spring boot</title>
+</head>
+<body>
+<p>
+    Welcome Spring boot.
+    This is served reactively.
+</p>
+<table>
+    <thead>
+    <th>Id</th>
+    <th>Name</th>
+    <th>Price</th>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${results}">
+        <td th:text="${item.id}"></td>
+        <td th:text="${item.itemName}"></td>
+        <td th:text="${item.itemPrice}"></td>
+    </tr>
+    </tbody>
+</table>

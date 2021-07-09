@@ -1,14 +1,13 @@
 package com.webflux.webflux.controller;
 
 import com.webflux.webflux.cart.Cart;
+import com.webflux.webflux.cart.Item;
 import com.webflux.webflux.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.result.view.Rendering;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Controller
@@ -40,6 +39,15 @@ public class CartController {
     public Mono<String> deleteToCart(@PathVariable String id) {
         return this.cartService.deleteToCart("My Cart", id)
             .thenReturn("redirect:/cart");
+    }
+
+    @GetMapping(value = "/cart/search")
+    public Mono<Rendering> searchItems(@RequestParam(required = false) String name,
+                                       @RequestParam(required = false) double itemPrice,
+                                       @RequestParam boolean useAnd) {
+        return Mono.just(Rendering.view("search.html")
+            .modelAttribute("results", cartService.searchItems(name, itemPrice, useAnd))
+            .build());
     }
 
 }

@@ -1,6 +1,7 @@
 package com.webflux.webflux.cart;
 
+import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
-public interface ItemRepository extends ReactiveCrudRepository<Item, String> {
+public interface ItemRepository extends ReactiveCrudRepository<Item, String>, ReactiveQueryByExampleExecutor<Item> {
 }
