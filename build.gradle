@@ -28,7 +28,7 @@ dependencies {
     testImplementation 'io.projectreactor:reactor-test'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-    implementation group: "de.flapdoodle.embed", name: "de.flapdoodle.embed.mongo"
+    testImplementation group: "de.flapdoodle.embed", name: "de.flapdoodle.embed.mongo"
     implementation 'org.mongodb:mongodb-driver-sync'
 }
 
