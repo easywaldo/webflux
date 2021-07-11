@@ -12,6 +12,8 @@ public class TemplateDatabaseLoader {
         return args -> {
             mongo.save(new Item("watermelon", 23000));
             mongo.save(new Item("ice maker", 70000));
+            mongo.save(new Item("green tea", 4800));
+            mongo.save(new Item("orange juice", 10000));
         };
     }
 }
