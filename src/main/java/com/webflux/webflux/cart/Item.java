@@ -14,8 +14,11 @@ public class Item {
     private double itemPrice;
 
     @Builder
-    public Item(String itemName,
-                double itemPrice) {
+    public Item(
+            String id,
+            String itemName,
+            double itemPrice) {
+        this.id = id;
         this.itemName = itemName;
         this.itemPrice = itemPrice;
     }

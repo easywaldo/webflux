@@ -69,7 +69,7 @@ public class CartService {
     }
 
     public Flux<Item> searchItems(String name, double itemPrice, boolean useAnd) {
-        Item item = new Item(name, itemPrice);
+        Item item = Item.builder().itemName(name).itemPrice(itemPrice).build();
         ExampleMatcher matcher = useAnd ?
             ExampleMatcher.matchingAll()
             : ExampleMatcher.matchingAny()

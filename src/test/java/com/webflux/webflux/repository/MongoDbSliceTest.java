@@ -17,7 +17,7 @@ public class MongoDbSliceTest {
     @Test
     void itemRepository_saveTest() {
         // arrange
-        Item sampleItem = new Item("name", 20000);
+        Item sampleItem = Item.builder().itemName("name").itemPrice(20000).build();
 
         // act
         itemRepository.save(sampleItem)

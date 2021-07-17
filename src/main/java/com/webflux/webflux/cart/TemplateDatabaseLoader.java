@@ -10,10 +10,10 @@ public class TemplateDatabaseLoader {
     @Bean(value = "template_loader")
     public CommandLineRunner initialize(MongoOperations mongo) {
         return args -> {
-            mongo.save(new Item("watermelon", 23000));
-            mongo.save(new Item("ice maker", 70000));
-            mongo.save(new Item("green tea", 4800));
-            mongo.save(new Item("orange juice", 10000));
+            mongo.save(Item.builder().itemName("watermelon").itemPrice(23000).build());
+            mongo.save(Item.builder().itemName("ice maker").itemPrice(70000).build());
+            mongo.save(Item.builder().itemName("green tea\"").itemPrice(4800).build());
+            mongo.save(Item.builder().itemName("orange juice").itemPrice(10000).build());
         };
     }
 }
