@@ -1,5 +1,6 @@
 package com.webflux.webflux.controller;
 
+import com.webflux.webflux.annotation.MyTimer;
 import com.webflux.webflux.cart.Item;
 import com.webflux.webflux.cart.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,5 +42,20 @@ public class ApiItemController {
             return item.map(content -> new Item(id, content.getItemName(), content.getItemPrice()))
             .flatMap(this.repository::save)
             .map(ResponseEntity::ok);
+    }
+
+    @MyTimer
+    @DeleteMapping("/longTask")
+    public void longTask() throws InterruptedException {
+
+        Thread.sleep(5000);
+
+        /*StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        Thread.sleep(5000);
+
+        stopWatch.stop();*/
+        //System.out.println("totalTime: " + stopWatch.getTotalTimeMillis());
     }
 }
