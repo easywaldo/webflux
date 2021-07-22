@@ -3,21 +3,31 @@ package com.webflux.webflux.controller;
 import com.webflux.webflux.annotation.MyTimer;
 import com.webflux.webflux.cart.Item;
 import com.webflux.webflux.cart.ItemRepository;
+import com.webflux.webflux.dto.RequestSampleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Valid;
+import javax.validation.Validator;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ApiItemController {
     private final ItemRepository repository;
+    private final Validator validator;
 
     @Autowired
-    public ApiItemController(ItemRepository repository) {
+    public ApiItemController(ItemRepository repository,
+                             Validator validator) {
         this.repository = repository;
+        this.validator = validator;
     }
 
     @GetMapping("/api/items")
@@ -57,5 +67,14 @@ public class ApiItemController {
 
         stopWatch.stop();*/
         //System.out.println("totalTime: " + stopWatch.getTotalTimeMillis());
+    }
+
+    @PostMapping(value = "/api/requestTest")
+    public void requestTest(@Valid @RequestBody RequestSampleDto sampleDto) {
+        List<ConstraintViolation<RequestSampleDto>> violations = this.validator.validate(sampleDto)
+            .stream().collect(Collectors.toList());
+        if(violations.stream().count() > 0) {
+            System.out.println("parameter error");
+        }
     }
 }
