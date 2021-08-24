@@ -26,6 +26,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
+    implementation 'io.projectreactor.tools:blockhound:1.0.3.RELEASE'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
     testImplementation group: "de.flapdoodle.embed", name: "de.flapdoodle.embed.mongo"
