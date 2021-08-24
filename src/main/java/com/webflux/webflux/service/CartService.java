@@ -21,7 +21,9 @@ public class CartService {
     }
 
     public Flux<Item> findAllItems() {
-        return this.itemRepository.findAll();
+        return this.itemRepository
+            .findAll()
+            .log("findAll");
     }
 
     public Mono<Cart> findCartItemById(String id) {
