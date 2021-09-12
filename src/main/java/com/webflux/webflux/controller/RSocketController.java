@@ -15,8 +15,7 @@ import java.net.URI;
 import java.time.Duration;
 
 import static io.rsocket.metadata.WellKnownMimeType.MESSAGE_RSOCKET_ROUTING;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.parseMediaType;
+import static org.springframework.http.MediaType.*;
 
 @RestController
 public class RSocketController {
@@ -61,5 +60,13 @@ public class RSocketController {
             .then(Mono.just(
                 ResponseEntity.created(URI.create("/items/fire-and-forget")).build()
             )));
+    }
+
+    @GetMapping(value = "/items", produces = TEXT_EVENT_STREAM_VALUE)
+    Flux<Item> livedUpdates() {
+        return this.requester
+            .flatMapMany(rSocketRequester -> rSocketRequester
+                .route("newItems.monitor")
+                .retrieveFlux(Item.class));
     }
 }
