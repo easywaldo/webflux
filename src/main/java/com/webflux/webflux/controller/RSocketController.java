@@ -50,4 +50,16 @@ public class RSocketController {
                 .retrieveFlux(Item.class)
                 .delayElements(Duration.ofSeconds(1)));
     }
+
+    @PostMapping(value = "/items/fire-and-forget")
+    Mono<ResponseEntity<?>> addNewItemUsingRSocketFireAndForget(@RequestBody Item item) {
+        return this.requester
+            .flatMap(rSocketRequester -> rSocketRequester
+                .route("newItems.fire-and-forget")
+                .data(item)
+                .send()
+            .then(Mono.just(
+                ResponseEntity.created(URI.create("/items/fire-and-forget")).build()
+            )));
+    }
 }

@@ -94,4 +94,30 @@ public class RSocketTest {
             return true;
         };
     }
+
+    @Test
+    void verifyRemoteOperationsThroughRSocketFireAndForget() throws InterruptedException {
+        // arrange
+        this.itemRepository.deleteAll()
+            .as(StepVerifier::create)
+            .verifyComplete();
+
+        // act
+        this.webTestClient.post().uri("/items/fire-and-forget")
+            .bodyValue(new Item("good-pd-001", "good product", 19.99))
+            .exchange()
+            .expectStatus().isCreated()
+            .expectBody().isEmpty();
+        Thread.sleep(500);
+
+        // assert
+        this.itemRepository.findAll()
+            .as(StepVerifier::create)
+            .expectNextMatches(item -> {
+                assertThat(item.getId()).isNotNull();
+                assertThat(item.getItemName()).isEqualTo("good product");
+                assertThat(item.getItemPrice()).isEqualTo(19.99);
+                return true;
+            }).verifyComplete();
+    }
 }
