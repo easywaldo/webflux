@@ -5,7 +5,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.Random;
@@ -43,6 +42,13 @@ class WebfluxApplicationTests {
 
         source.subscribeOn(Schedulers.parallel())
             .block();
+    }
+
+    @Test
+    public void pubTest() {
+        Flux.range(1, 100)
+            .publishOn(Schedulers.parallel())
+            .subscribe(v -> System.out.println(v));
     }
 
 }
