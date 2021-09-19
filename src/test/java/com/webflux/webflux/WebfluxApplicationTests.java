@@ -7,6 +7,8 @@ import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 @SpringBootTest
@@ -49,6 +51,17 @@ class WebfluxApplicationTests {
         Flux.range(1, 100)
             .publishOn(Schedulers.parallel())
             .subscribe(v -> System.out.println(v));
+    }
+
+    @Test
+    public void flux_create_test() {
+        Flux<String> fluxStr = Flux.just("a", "b", "foobar");
+        Flux<String> fluxIter = Flux.fromIterable(Arrays.asList("ab", "cd", "ef", "foobar"));
+        Flux<Integer> numbers = Flux.range(0, 10);
+
+        Mono<String> noData = Mono.empty();
+        Mono<String> data = Mono.just("foobar");
+
     }
 
 }
