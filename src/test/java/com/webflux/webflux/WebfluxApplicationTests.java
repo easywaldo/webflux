@@ -3,6 +3,7 @@ package com.webflux.webflux;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -76,6 +77,15 @@ class WebfluxApplicationTests {
             }
         );
         squares.subscribe(x -> System.out.println(x));
+    }
+
+    @Test
+    public void flux_sink_push_test() {
+        var pusher = Flux.push((FluxSink sink) -> {
+            sink.next(1).next(2).next(3).complete();
+        });
+
+        pusher.subscribe(System.out::println);
     }
 
 }
