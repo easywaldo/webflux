@@ -103,4 +103,18 @@ class WebfluxApplicationTests {
         squares.forEach(x -> System.out.println(x));
     }
 
+    @Test
+    public void flux_scheduler_parallel_test() {
+        List<Integer> squares = new ArrayList<>();
+        Flux.range(1,64).flatMap(v -> Mono.just(v)
+            .subscribeOn(Schedulers.parallel())
+            .map(w -> w * w))
+            .doOnError(e -> e.printStackTrace())
+            .doOnComplete(() -> System.out.println("Completed"))
+            //.subscribeOn(Schedulers.parallel())
+            .subscribe(squares::add);
+
+        squares.forEach(x -> System.out.println(x));
+    }
+
 }
