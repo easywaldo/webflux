@@ -7,6 +7,8 @@ import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.test.StepVerifier;
+import reactor.util.context.Context;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,6 +117,17 @@ class WebfluxApplicationTests {
             .subscribe(squares::add);
 
         squares.forEach(x -> System.out.println(x));
+    }
+
+    @Test
+    public void flux_context_test() {
+        Flux<Integer> flux = Flux.just(1).subscriberContext(Context.of("pid", 123));
+        Flux<String> stringFlux = flux.flatMap(i -> Mono.subscriberContext()
+            .map(ctx -> i + " pid: " + ctx.getOrDefault("pid", 0)));
+
+        StepVerifier.create(stringFlux)
+            .expectNext("1 pid: 0")
+            .verifyComplete();
     }
 
 }
