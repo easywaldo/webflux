@@ -10,6 +10,7 @@ import reactor.core.scheduler.Schedulers;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 
 @SpringBootTest
 class WebfluxApplicationTests {
@@ -62,6 +63,19 @@ class WebfluxApplicationTests {
         Mono<String> noData = Mono.empty();
         Mono<String> data = Mono.just("foobar");
 
+    }
+
+    @Test
+    public void flux_generate_test() {
+        Flux<Long> squares = Flux.generate(
+            AtomicLong::new, (state, sink) -> {
+                long i = state.getAndIncrement();
+                sink.next(i * i);
+                if (i == 10) sink.complete();
+                return state;
+            }
+        );
+        squares.subscribe(x -> System.out.println(x));
     }
 
 }
