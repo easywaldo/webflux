@@ -2,11 +2,14 @@ package com.webflux.webflux;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Hooks;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
 import reactor.util.context.Context;
 
@@ -128,6 +131,37 @@ class WebfluxApplicationTests {
         StepVerifier.create(stringFlux)
             .expectNext("1 pid: 0")
             .verifyComplete();
+    }
+
+    @Test
+    public void webclient_test() {
+        HttpClient httpClient = HttpClient.create();
+        WebClient client = WebClient.builder()
+            .codecs(config -> config.defaultCodecs()
+               .maxInMemorySize(2 * 1024 * 1024))
+           .clientConnector(new ReactorClientHttpConnector(httpClient))
+           .build();
+
+
+        String test = client.get().uri("http://m.yes24.com").retrieve()
+            .bodyToMono(String.class)
+            .block();
+        System.out.print(test);
+
+
+        var monoRequest = client.get()
+            .uri("http://m.yes24.com")
+            .exchangeToFlux(e -> {
+                e.bodyToMono(String.class);
+                return null;
+            });
+
+        monoRequest.subscribe(c -> {
+            System.out.print("subscribed ..... " + c.toString());
+        });
+
+
+
     }
 
 }
