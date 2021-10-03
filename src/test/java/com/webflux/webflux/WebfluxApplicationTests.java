@@ -13,6 +13,7 @@ import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
 import reactor.util.context.Context;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -142,22 +143,20 @@ class WebfluxApplicationTests {
            .clientConnector(new ReactorClientHttpConnector(httpClient))
            .build();
 
-
         String test = client.get().uri("http://m.yes24.com").retrieve()
             .bodyToMono(String.class)
             .block();
         System.out.print(test);
 
-
         var monoRequest = client.get()
             .uri("http://m.yes24.com")
-            .exchangeToFlux(e -> {
-                e.bodyToMono(String.class);
-                return null;
-            });
+            .retrieve()
+            .bodyToMono(String.class)
+            .doOnSubscribe(s -> s.request(0))
+            .delaySubscription(Duration.ofMillis(1000), Schedulers.newSingle("test-mono"));
 
         monoRequest.subscribe(c -> {
-            System.out.print("subscribed ..... " + c.toString());
+            System.out.print("#### content started ####\n" + c + "\n#### content closed ####");
         });
 
 
