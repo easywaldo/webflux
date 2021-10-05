@@ -1,8 +1,14 @@
 package com.webflux.webflux;
 
+import io.netty.channel.ChannelOption;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
@@ -19,9 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 class WebfluxApplicationTests {
@@ -181,6 +189,34 @@ class WebfluxApplicationTests {
         assertEquals(2, list.size());
         assertEquals("foo", list.get(0));
         assertEquals("bar", list.get(1));
+    }
+
+    @Test
+    public void webclient_get_response_test() {
+        // arrange
+        HttpClient httpClient = HttpClient.create()
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+            .responseTimeout(Duration.ofMillis(5000))
+            .doOnConnected(conn ->
+                conn.addHandlerLast(new ReadTimeoutHandler(5000, TimeUnit.MILLISECONDS))
+                    .addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS)));
+        WebClient client = WebClient.builder()
+            .clientConnector(new ReactorClientHttpConnector(httpClient))
+            .build();
+        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = client.method(HttpMethod.POST);
+        WebClient.RequestBodySpec bodySpec = uriSpec.uri("https://m.naver.com");
+        WebClient.RequestHeadersSpec headersSpec = bodySpec.body(
+            BodyInserters.fromPublisher(Mono.just("data"), String.class)
+        );
+
+        // act
+        Mono<String> response = headersSpec.retrieve()
+            .bodyToMono(String.class);
+
+        // assert
+        var result = response.block(Duration.ofMillis(7000));
+        assertNotNull(result);
+        System.out.print(result);
     }
 
 }
