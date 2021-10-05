@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
+import reactor.test.publisher.TestPublisher;
 import reactor.util.context.Context;
 
 import java.time.Duration;
@@ -19,6 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class WebfluxApplicationTests {
@@ -161,6 +164,23 @@ class WebfluxApplicationTests {
 
 
 
+    }
+
+    @Test
+    public void test_publisher() {
+        // arrange
+        TestPublisher<Object> publisher = TestPublisher.create();
+        Flux<Object> stringFlux = publisher.flux();
+        List list = new ArrayList();
+
+        // act
+        stringFlux.subscribe(next -> list.add(next), ex -> ex.printStackTrace());
+        publisher.emit("foo", "bar");
+
+        // assert
+        assertEquals(2, list.size());
+        assertEquals("foo", list.get(0));
+        assertEquals("bar", list.get(1));
     }
 
 }
