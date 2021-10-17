@@ -6,7 +6,6 @@ import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,7 +24,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -192,7 +194,7 @@ class WebfluxApplicationTests {
     }
 
     @Test
-    public void webclient_get_response_test() {
+    public void webclient_get_response_test() throws ExecutionException, InterruptedException, TimeoutException {
         // arrange
         HttpClient httpClient = HttpClient.create()
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
@@ -211,12 +213,23 @@ class WebfluxApplicationTests {
 
         // act
         Mono<String> response = headersSpec.retrieve()
-            .bodyToMono(String.class);
+            .bodyToMono(String.class)
+            .doOnSuccess(System.out::print)
+            .doOnNext(System.out::print)
+            .subscribeOn(Schedulers.immediate());
 
         // assert
-        var result = response.block(Duration.ofMillis(7000));
-        assertNotNull(result);
-        System.out.print(result);
+        var blockResult = response.block(Duration.ofMillis(7000));
+        System.out.print("blockResult : " + blockResult);
+        assertNotNull(blockResult);
+
+        String futureHtml = "";
+        futureHtml = response.toFuture().get(1000L, TimeUnit.MILLISECONDS);
+        System.out.print("\n futureHtml : " + futureHtml);
+        assertNotNull(futureHtml);
+
+        CompletableFuture<String> asyncResult = response.toFuture();
+
     }
 
 }
