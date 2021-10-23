@@ -25,9 +25,7 @@ import reactor.netty.http.client.HttpClient;
 import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 import static io.rsocket.metadata.WellKnownMimeType.MESSAGE_RSOCKET_ROUTING;
@@ -119,15 +117,15 @@ public class RSocketController {
 
     @Async
     @GetMapping(value = "/async-result")
-    public CompletableFuture<String> asyncResult() throws InterruptedException {
-        var result = CompletableFuture.supplyAsync(new Supplier<String>() {
-            @SneakyThrows
-            @Override
-            public String get() {
+    public CompletableFuture<String> asyncResult() {
+        var result = CompletableFuture.supplyAsync(() -> {
+            try {
                 Thread.sleep(3000);
-                System.out.println("get result");
-                return "hello world";
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            System.out.println("get result");
+            return "hello world";
         });
         System.out.println("request async result");
         return result;
