@@ -23,6 +23,7 @@ import reactor.netty.http.client.HttpClient;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -85,7 +86,7 @@ public class RSocketController {
 
     @Async
     @GetMapping(value = "/asyncHttp")
-    public String asyncHttp() throws ExecutionException, InterruptedException, TimeoutException {
+    public CompletableFuture<String> asyncHttp() {
         HttpClient httpClient = HttpClient.create()
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
             .responseTimeout(Duration.ofMillis(5000))
@@ -103,13 +104,14 @@ public class RSocketController {
 
         Mono<String> response = headersSpec.retrieve()
             .bodyToMono(String.class)
-            .doOnSuccess(System.out::print)
+            .doOnSuccess(result -> System.out.println(String.format("Response Html : %s", result)))
             .doOnNext(System.out::print)
             .subscribeOn(Schedulers.immediate());
 
-        String futureHtml = "";
-        futureHtml = response.toFuture().get(1000L, TimeUnit.MILLISECONDS);
+        System.out.println("Completed request");
+        return response.toFuture();
+        //futureHtml = response.toFuture().get(1000L, TimeUnit.MILLISECONDS);
 
-        return futureHtml;
+        //return futureHtml;
     }
 }
