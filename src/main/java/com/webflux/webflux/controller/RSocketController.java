@@ -4,6 +4,7 @@ import com.webflux.webflux.cart.Item;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import static io.rsocket.metadata.WellKnownMimeType.MESSAGE_RSOCKET_ROUTING;
 import static org.springframework.http.MediaType.*;
@@ -113,5 +115,21 @@ public class RSocketController {
         //futureHtml = response.toFuture().get(1000L, TimeUnit.MILLISECONDS);
 
         //return futureHtml;
+    }
+
+    @Async
+    @GetMapping(value = "/async-result")
+    public CompletableFuture<String> asyncResult() throws InterruptedException {
+        var result = CompletableFuture.supplyAsync(new Supplier<String>() {
+            @SneakyThrows
+            @Override
+            public String get() {
+                Thread.sleep(3000);
+                System.out.println("get result");
+                return "hello world";
+            }
+        });
+        System.out.println("request async result");
+        return result;
     }
 }
