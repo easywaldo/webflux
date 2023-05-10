@@ -32,4 +32,25 @@ public class CompletionTest {
         });
         Thread.sleep(2000);
     }
+
+    @Test
+    void test_then_accept_async() throws InterruptedException {
+        log.info("Start main");
+        CompletionStage<Integer> stage = CompletableFuture.supplyAsync(() -> {
+            return 100;
+        }).thenApplyAsync(s -> {
+            return 200;
+        }).thenApplyAsync(s -> {
+            return 1000;
+        });
+
+        stage.thenAcceptAsync(i -> {
+            log.info("First");
+            System.out.println(i);
+        }).thenAcceptAsync(i -> {
+            log.info("Second");
+            System.out.println(i);
+        });
+        Thread.sleep(2000);
+    }
 }
