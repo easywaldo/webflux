@@ -39,7 +39,7 @@ public class RSocketController {
         this.requester = builder
             .dataMimeType(APPLICATION_JSON)
             .metadataMimeType(parseMediaType(MESSAGE_RSOCKET_ROUTING.toString()))
-            .connectTcp("localhost", 7000)
+            .connectTcp("localhost", 7008)
             .retry(5)
             .cache();
     }
